@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main, development]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Run pnpm install --no-frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Run pnpm lint
+        run: pnpm lint
+
+      - name: Run pnpm typecheck
+        run: pnpm typecheck
+
+      - name: Run pnpm build
+        run: pnpm build
