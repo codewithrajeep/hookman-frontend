@@ -1,0 +1,47 @@
+name: Auto PR to main
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  validate-and-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
+
+      - name: Create PR to main
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: development
+          destination_branch: main
+          pr_title: "chore: sync development → main"
+          pr_body: |
+            ## Automated PR
+            Syncing development into main.
+
+            Updated codebase passes build, lint, and typecheck.
+          pr_label: "chore"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
