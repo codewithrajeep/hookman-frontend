@@ -1,0 +1,44 @@
+name: Auto PR to main
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  validate-and-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
+
+      - name: Create PR to main
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: development
+          base: main
+          title: "chore: sync development → main"
+          body: |
+            ## Automated PR
+            Syncing development into main.
+
+            Updated codebase passes build, lint, and typecheck.
+          labels: chore
