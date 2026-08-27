@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,7 +33,7 @@ export default function LoginPage() {
                 type="email"
                 name="email"
                 id="email"
-                placeholder="Enter your email"
+                placeholder="you@company.com"
                 className="py-6"
                 required
               />
@@ -61,6 +63,7 @@ export default function LoginPage() {
             <Button
               variant="ghost"
               className="cursor-pointer text-xs font-medium flex gap-1 hover:gap-2 transition-all"
+              onClick={() => (window.location.href = "/")}
             >
               <ArrowLeft className="size-4" />
               Back to home
@@ -68,6 +71,7 @@ export default function LoginPage() {
             <Button
               variant="ghost"
               className="cursor-pointer text-xs font-medium flex gap-1 hover:gap-2 transition-all"
+              onClick={() => (window.location.href = "/register")}
             >
               Signup
               <ArrowRight className="size-4" />
