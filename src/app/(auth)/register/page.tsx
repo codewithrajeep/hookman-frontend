@@ -19,7 +19,7 @@ export default function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center px-5 overflow-hidden">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="tracking-tight text-lg sm:text-xl font-semibold">
+          <CardTitle className="font-mb-sans tracking-tight text-lg sm:text-xl font-semibold">
             Create your account
           </CardTitle>
           <CardDescription className="tracking-tight font-medium">
