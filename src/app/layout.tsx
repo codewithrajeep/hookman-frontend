@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Providers } from "./providers";
@@ -12,6 +13,17 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// custom font
+const mbSans = localFont({
+  src: "../../public/fonts/MBSans.ttf",
+  variable: "--font-mb-sans",
+});
+
+const mbMono = localFont({
+  src: "../../public/fonts/MBMono.ttf",
+  variable: "--font-mb-mono",
 });
 
 export const metadata: Metadata = {
@@ -28,7 +40,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+      className={`${mbSans.variable} ${mbMono.variable} ${geistSans.variable} ${geistMono.variable} font-mb-sans antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider
