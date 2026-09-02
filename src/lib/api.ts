@@ -1,4 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+// Minimum loading time for all API requests(in milliseconds)
+const MIN_REQUEST_DELAY_MS = parseInt(process.env.MIN_REQUEST_DELAY_MS || "0"); //
 
 type RequestOptions = {
   method?: string;
@@ -7,10 +9,11 @@ type RequestOptions = {
 };
 // Base fetch warpper - sends cookies automatically with every request
 // credentials: "include" is what makes httpOnly cookies work cross-origin
-const request = async<T>(
+const request = async <T>(
   endpoint: string,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<T> => {
+  const start = Date.now();
   const { method = "GET", body, headers = {} } = options;
   const res = await fetch(`${API_URL}${endpoint}`, {
     method,
@@ -19,18 +22,24 @@ const request = async<T>(
       "Content-Type": "application/json",
       ...headers,
     },
-    ...(body ? { body: JSON.stringify(body) } : {})
+    ...(body ? { body: JSON.stringify(body) } : {}),
   });
   const data = await res.json();
+  // enforce minimum delay
+  const elapsed = Date.now() - start;
+  const remaining = Math.max(0, MIN_REQUEST_DELAY_MS - elapsed);
+  if (remaining > 0) {
+    await new Promise((resolve) => setTimeout(resolve, remaining));
+  }
   if (!res.ok) throw new Error(data.message ?? "Something went wrong");
-  return data;
+  return data as T;
 };
 
 // ---------- Auth ----------
 export const authApi = {
-  register: (body: { name: string, email: string, password: string }) =>
+  register: (body: { name: string; email: string; password: string }) =>
     request("/api/v1/auth/register", { method: "POST", body }),
-  login: (body: { email: string, password: string }) =>
+  login: (body: { email: string; password: string }) =>
     request("/api/v1/auth/login", { method: "POST", body }),
 };
 
@@ -39,19 +48,23 @@ export const apiKeyApi = {
   create: (body: { name: string }) =>
     request("/api/v1/api-keys", { method: "POST", body }),
   list: () => request("/api/v1/api-keys"),
-  delete: (id: string) => request(`/api/v1/api-keys/${id}`, { method: "DELETE" }),
+  delete: (id: string) =>
+    request(`/api/v1/api-keys/${id}`, { method: "DELETE" }),
 };
 
 // ---------- Endpoints ----------
 export const endpointApi = {
-  create: (body: { name: string, url: string }) =>
+  create: (body: { name: string; url: string }) =>
     request("/api/v1/endpoints", { method: "POST", body }),
   list: () => request("/api/v1/endpoints"),
   getById: (id: string) => request(`/api/v1/endpoints/${id}`),
-  update: (id: string, body: { name?: string, url?: string, isActive?: boolean }) =>
-    request(`/api/v1/endpoints/${id}`, { method: "PATCH", body }),
-  delete: (id: string) => request(`/api/v1/endpoints/${id}`, { method: "DELETE" }),
-}
+  update: (
+    id: string,
+    body: { name?: string; url?: string; isActive?: boolean },
+  ) => request(`/api/v1/endpoints/${id}`, { method: "PATCH", body }),
+  delete: (id: string) =>
+    request(`/api/v1/endpoints/${id}`, { method: "DELETE" }),
+};
 
 // ---------- Events ----------
 export const eventApi = {
@@ -61,17 +74,20 @@ export const eventApi = {
 
 // ---------- Delivery ----------
 export const deliveryApi = {
-  listAttempts: (eventId: string) => request(`/api/v1/delivery/attempts/${eventId}`),
+  listAttempts: (eventId: string) =>
+    request(`/api/v1/delivery/attempts/${eventId}`),
   listDeadLetters: () => request(`/api/v1/delivery/dead-letters`),
   getDeadLetter: (eventId: string) =>
     request(`/api/v1/delivery/dead-letters/${eventId}`),
   replay: (eventId: string) =>
-    request(`/api/v1/delivery/dead-letters/${eventId}/replay`, { method: "POST" })
-}
+    request(`/api/v1/delivery/dead-letters/${eventId}/replay`, {
+      method: "POST",
+    }),
+};
 
 // ---------- Stats ----------
 export const statsApi = {
   getOverall: () => request(`/api/v1/stats`),
   getByEndpoint: (endpointApi: string) =>
     request(`/api/v1/stats/${endpointApi}`),
-}
+};
