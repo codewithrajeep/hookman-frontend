@@ -43,32 +43,25 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    toast.close();
     setLoading(true);
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/;
-    if (!passwordRegex.test(formData.password)) {
+    try {
+      await authApi.register(formData);
+      toast.add({
+        type: "success",
+        description: "Account created successfully",
+      });
+      router.push("/login");
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Something went wrong";
       toast.add({
         type: "error",
-        description:
-          "Password must contain uppercase, lowercase, number and special character",
+        description: message,
         priority: "high",
       });
+    } finally {
       setLoading(false);
-      return;
     }
-    const registerPromise = authApi.register(formData);
-    toast.promise(registerPromise, {
-      loading: "Creating your account...",
-      success: () => {
-        setLoading(false);
-        router.push("/login");
-        return "Account created successfully! Please log in.";
-      },
-      error: (err) => {
-        setLoading(false);
-        return err.message || "Something went wrong. Please try again.";
-      },
-    });
   };
   return (
     <div className="flex min-h-screen items-center justify-center px-5 overflow-hidden">
