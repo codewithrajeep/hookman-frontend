@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
 import { authApi } from "@/lib/api";
+import { useAuthStore } from "@/store/auth.store";
 import { ArrowLeft, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -42,7 +43,8 @@ export default function LoginPage() {
     e.stopPropagation();
     setLoading(true);
     try {
-      await authApi.login(formData);
+      const res = (await authApi.login(formData)) as any;
+      useAuthStore.getState().setUser(res.user);
       toast.add({
         type: "success",
         description: "Logged in successfully",
