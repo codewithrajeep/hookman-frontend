@@ -41,6 +41,7 @@ export const authApi = {
     request("/api/v1/auth/register", { method: "POST", body }),
   login: (body: { email: string; password: string }) =>
     request("/api/v1/auth/login", { method: "POST", body }),
+  logout: () => request("/api/v1/auth/logout", { method: "POST" }),
 };
 
 // ---------- API Keys ----------
