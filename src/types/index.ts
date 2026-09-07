@@ -66,7 +66,7 @@ export interface DeadLetterEvent {
   id: string;
   eventId: string;
   endpointId: string;
-  paylaod: Record<string, unknown>;
+  payload: Record<string, unknown>;
   reason: string;
   createdAt: string;
 }
