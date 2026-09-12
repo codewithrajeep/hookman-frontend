@@ -1,14 +1,13 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
-// Minimum loading time for all API requests(in milliseconds)
-const MIN_REQUEST_DELAY_MS = parseInt(process.env.MIN_REQUEST_DELAY_MS || "0"); //
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
+// Minimum loading time for all API requests (in milliseconds)
+const MIN_REQUEST_DELAY_MS = parseInt(process.env.MIN_REQUEST_DELAY_MS || "0");
 
 type RequestOptions = {
   method?: string;
   body?: unknown;
   headers?: Record<string, string>;
 };
-// Base fetch warpper - sends cookies automatically with every request
-// credentials: "include" is what makes httpOnly cookies work cross-origin
+
 const request = async <T>(
   endpoint: string,
   options: RequestOptions = {},
@@ -17,7 +16,7 @@ const request = async <T>(
   const { method = "GET", body, headers = {} } = options;
   const res = await fetch(`${API_URL}${endpoint}`, {
     method,
-    credentials: "include", // sends httpOnly cookie on every request
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...headers,
@@ -25,12 +24,13 @@ const request = async <T>(
     ...(body ? { body: JSON.stringify(body) } : {}),
   });
   const data = await res.json();
-  // enforce minimum delay
+
   const elapsed = Date.now() - start;
   const remaining = Math.max(0, MIN_REQUEST_DELAY_MS - elapsed);
   if (remaining > 0) {
     await new Promise((resolve) => setTimeout(resolve, remaining));
   }
+
   if (!res.ok) throw new Error(data.message ?? "Something went wrong");
   return data as T;
 };
