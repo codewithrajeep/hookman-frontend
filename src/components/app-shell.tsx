@@ -1,3 +1,4 @@
+"use client";
 import {
   LayoutDashboard,
   LogOut,
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -59,6 +61,21 @@ function Logo() {
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true, // client
+    () => false, // server
+  );
+
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="icon" className="h-9 w-9" disabled>
+        <Moon className="h-4 w-4" />
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    );
+  }
+
   return (
     <Button
       variant="ghost"
@@ -102,27 +119,33 @@ function WSDot() {
 function UserMenu() {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-secondary">
-            <User className="h-3.5 w-3.5" />
-          </div>
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer h-9 w-9 rounded-full"
+          >
+            <div className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-secondary">
+              <User className="h-3.5 w-3.5" />
+            </div>
+          </Button>
+        }
+      />
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuLabel>john@acme.com</DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>john@acme.com</DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <Settings className="mr-2 h-4 w-4" />
           Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <Link href="/">
-          <DropdownMenuItem>
-            <LogOut className="mr-2 h-4 w-4" />
-            Log out
-          </DropdownMenuItem>
-        </Link>
+        <DropdownMenuItem>
+          <LogOut className="mr-2 h-4 w-4" />
+          Log out
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -197,15 +220,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-3">
             {/* Mobile menu trigger */}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 md:hidden"
-                >
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
+              <SheetTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 md:hidden"
+                  >
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                }
+              />
               <SheetContent side="left" className="w-72 p-0">
                 <SheetHeader className="px-4 pt-4">
                   <SheetTitle className="flex items-center gap-2">

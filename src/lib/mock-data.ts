@@ -1,13 +1,4 @@
-import {
-  DeadLetterEvent,
-  DeliveryAttempt,
-  Endpoint,
-  Event,
-  EventStatus,
-} from "@/types";
-
-// helper to generate random IDs
-const uid = () => Math.random().toString(36).substring(2, 10);
+import { DeadLetterEvent, DeliveryAttempt, Endpoint, Event } from "@/types";
 
 // ---------- Mock Endpoints ----------
 export const endpoints: Endpoint[] = [
@@ -71,42 +62,6 @@ export const endpoints: Endpoint[] = [
     createdAt: "2025-07-22T13:10:00Z",
     updatedAt: "2025-07-22T13:10:00Z",
   },
-];
-
-// --------- Mock Delivery Attempts ----------
-const mockAttempts = (
-  count: number,
-  statusCode: number,
-  success: boolean,
-  baseDate: string,
-): DeliveryAttempt[] => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `att_${uid()}`,
-    eventId: "evt_placeholder",
-    attemptNumber: i + 1,
-    statusCode,
-    responseBody: success ? '{"status":"ok"}' : '{"error":"failed"}',
-    success,
-    createdAt: new Date(new Date(baseDate).getTime() + i * 5000).toISOString(),
-  }));
-};
-
-// --------- Mock Events ----------
-const eventStatuses: EventStatus[] = [
-  "DELIVERED",
-  "FAILED",
-  "PENDING",
-  "DELIVERING",
-];
-const eventTypes = [
-  "invoice.paid",
-  "order.created",
-  "user.updated",
-  "metric.ingested",
-  "alert.triggered",
-  "order.refunded",
-  "user.deleted",
-  "payment.failed",
 ];
 export const events: Event[] = [
   {
