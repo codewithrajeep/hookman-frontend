@@ -1,5 +1,4 @@
 import { AppShell } from "@/components/app-shell";
-import { ThemeProvider } from "@/components/theme-provider";
 import React from "react";
 
 export default function DashboardLayout({
