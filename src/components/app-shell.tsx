@@ -32,7 +32,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/auth.store";
+import { authApi } from "@/lib/api";
+import { toast } from "./ui/toast";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -117,6 +120,22 @@ function WSDot() {
 }
 
 function UserMenu() {
+  const router = useRouter();
+  const user = useAuthStore((s) => s.user);
+  const [loggingOut, setLoggingOut] = React.useState(false);
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await authApi.logout();
+    } finally {
+      useAuthStore.getState().clearUser(); // disconnects socket
+      router.push("/login");
+      toast.add({
+        type: "success",
+        description: "Logout successfully.",
+      });
+    }
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -134,17 +153,17 @@ function UserMenu() {
       />
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>john@acme.com</DropdownMenuLabel>
+          <DropdownMenuLabel>{user?.email ?? "Account"}</DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/settings")}>
           <Settings className="mr-2 h-4 w-4" />
           Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem className='cursor-pointer' onClick={handleLogout} disabled={loggingOut}>
           <LogOut className="mr-2 h-4 w-4" />
-          Log out
+          {loggingOut ? "Logging out..." : "Log out"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
