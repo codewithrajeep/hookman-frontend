@@ -127,12 +127,14 @@ function UserMenu() {
     setLoggingOut(true);
     try {
       await authApi.logout();
+    } catch (err) {
+      console.error("Logout API failed:", err);
     } finally {
-      useAuthStore.getState().clearUser(); // disconnects socket
+      useAuthStore.getState().clearUser(); // disconnect socket
       router.push("/login");
       toast.add({
         type: "success",
-        description: "Logout successfully.",
+        description: "Logged out successfully",
       });
     }
   };
@@ -156,12 +158,19 @@ function UserMenu() {
           <DropdownMenuLabel>{user?.email ?? "Account"}</DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/settings")}>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => router.push("/settings")}
+        >
           <Settings className="mr-2 h-4 w-4" />
           Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className='cursor-pointer' onClick={handleLogout} disabled={loggingOut}>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={handleLogout}
+          disabled={loggingOut}
+        >
           <LogOut className="mr-2 h-4 w-4" />
           {loggingOut ? "Logging out..." : "Log out"}
         </DropdownMenuItem>
