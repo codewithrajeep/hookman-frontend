@@ -53,7 +53,7 @@ export default function SettingsLayout({
         </nav>
       </div>
       {/* Tab content */}
-      <div className="max-w-3xl">{children}</div>
+      <div className="w-full">{children}</div>
     </div>
   );
 }
