@@ -37,13 +37,13 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import { useState } from "react";
 
 export default function EndpointsPage() {
-  const [search, setSearch] = React.useState("");
-  const [createOpen, setCreateOpen] = React.useState(false);
-  const [name, setName] = React.useState("");
-  const [url, setUrl] = React.useState("");
+  const [search, setSearch] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
   const filtered = endpoints.filter(
     (e) =>
       e.name.toLowerCase().includes(search.toLowerCase()) ||
