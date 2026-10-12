@@ -31,33 +31,6 @@ const pending = events.filter(
   (e) => e.status === "PENDING" || e.status === "DELIVERING",
 ).length;
 
-const stats = [
-  {
-    label: "Total Events",
-    value: totalEvents.toLocaleString(),
-    icon: Zap,
-    delta: "+12.3%",
-  },
-  {
-    label: "Delivered",
-    value: delivered.toLocaleString(),
-    icon: Check,
-    delta: "+8.1%",
-  },
-  { label: "Failed", value: failed.toLocaleString(), icon: X, delta: "-3.2%" },
-  {
-    label: "Pending",
-    value: pending.toLocaleString(),
-    icon: Clock,
-    delta: "+1.4%",
-  },
-];
-
-const getEndpointName = (endpointId: string) => {
-  const endpoint = endpoints.find((e) => e.id === endpointId);
-  return endpoint?.name ?? endpointId;
-};
-
 export default function DashboardPage() {
   const {
     data: stats,
